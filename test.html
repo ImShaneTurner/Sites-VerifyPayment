@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ant Design Date Picker Example</title>
+    <title>Ant Design Example</title>
     <!-- Import Ant Design CSS stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.17.2/antd.min.css" />
     <!-- Import Ant Design JavaScript -->
@@ -9,12 +9,28 @@
   </head>
   <body>
     <div style="margin: 2rem">
-      <h1>Ant Design Date Picker Example</h1>
+      <h1>Ant Design Example</h1>
       <div style="margin-bottom: 1rem">
         <label for="transaction-date-picker">Transaction date</label>
         <br />
         <DatePicker id="transaction-date-picker" required />
       </div>
+      <div style="margin-bottom: 1rem">
+        <label for="transaction-amount-input">Transaction amount</label>
+        <br />
+        <InputNumber id="transaction-amount-input" min={0} precision={2} />
+      </div>
+      <div style="margin-bottom: 1rem">
+        <label for="payment-reference-input">Payment reference</label>
+        <br />
+        <Input id="payment-reference-input" placeholder="Enter payment reference" />
+      </div>
+      <div style="margin-bottom: 1rem">
+        <label for="account-number-input">Account number</label>
+        <br />
+        <Input id="account-number-input" placeholder="Enter an account number" />
+      </div>
+      <Button type="primary" htmlType="submit">Submit</Button>
     </div>
   </body>
 </html>
