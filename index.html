@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <!-- Import Ant Design CSS stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.17.2/antd.min.css" />
+    <!-- Import Axios library for making API requests -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <style>
       header {
         margin: 0;
-        padding: 24px;
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-top: 24px;
       }
 
       html, body {
@@ -19,7 +23,7 @@
         align-items: center;
         margin: 0;
         padding: 0;
-        <!-- max-width: 480px; -->
+        max-width: 960px;
       }
 
       footer {
@@ -32,25 +36,91 @@
         width: 100%;
       }
 
+      .content-block {
+        padding-top: 24px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
       .ant-form {
         padding: 24px;
+      }
+
+      .spacer {
+        padding: 8px;
       }
 
       .ant-typography {
         font-size: 24px;
         font-weight: bold;
+        padding-top: 0px;
+        padding-bottom: 0px;
+      }
+
+      hr.solid 
+      {
+        border-top: 1px solid #B4B4B4;
       }
     </style>
   </head>
-  <body>
-    <!-- Header -->
-    <header>
-      <h2 class="ant-typography">Verify payment</h2>
-      <p>Please enter the payment details as given to you by the payer.</p>
-    </header>  
-
-    <!-- Transaction form -->
+  <body>   
+    <!-- Title section -->
+    <div class="content-block">
+      <h1 class="ant-typography">Payment verifier</h1>
+      <p>
+      I once lost out on a lot of money due to me selling an item on Facebook Marketplace after being presented with a fake proof of payment. <br>
+      So, I made this simple site that verifies the proof of payment given to you by the buyer, so that it hopefully doesn't happen to you too. <br>
+      Remember, if it doesn't feel right, then decline the sale until payment reflects properly.
+      </p>
+      <hr class="solid">       
+    </div>
+    
+    <!-- Originating bank -->
+    <div class="content-block">    
+      <h2 class="ant-typography">Originating bank</h2> 
+      <p>The following banks are currently supported.</p>
+      <div class="ant-row">
+        <div class="ant-col">
+          <div class="ant-tag ant-tag-red">ABSA</div>
+        </div>
+        <div class="ant-col">
+          <div class="ant-tag ant-tag-red">Capitec</div>
+        </div>
+        <div class="ant-col">
+          <div class="ant-tag ant-tag-cyan">First National Bank</div>
+        </div>
+        <div class="ant-col">
+          <div class="ant-tag ant-tag-green">Nedbank</div>
+        </div>
+        <div class="ant-col">
+          <div class="ant-tag ant-tag-blue">Standard Bank</div>
+        </div>
+      </div>
+      <div class="spacer">
+      </div>
+      <!-- Originating Bank dropdown -->
+      <div class="ant-form-item">
+        <label class="ant-form-item-label" for="originating_bank">Originating Bank:</label>
+        <div class="ant-form-item-control">
+          <div class="ant-select ant-select-single ant-select-show-arrow">
+            <select class="ant-select-selector" id="originating_bank" name="originating_bank" required>
+              <option value="bank1">ABSA</option>
+              <option value="bank2">Capitec</option>
+              <option value="bank3">First National Bank</option>
+              <option value="bank4">Nedbank</option>
+              <option value="bank4">Standard Bank</option>
+            </select>
+            <span class="ant-select-arrow"></span>
+          </div>
+        </div>
+      </div>
+      <hr class="solid"> 
+    </div>
+    
     <form id="payment-form" class="ant-form ant-form-horizontal">
+      <h2 class="ant-typography">Payment details</h2>
+      <p>Please enter the payment details as it appears on the proof of payment</p> 
+      <!-- Transaction form -->
       <div class="ant-form-item">
         <label class="ant-form-item-label">Transaction Date:</label>
         <div class="ant-form-item-control">
@@ -85,67 +155,49 @@
       </div>
       <div class="ant-form-item">
         <div class="ant-form-item-control">
-          <button class="ant-btn ant-btn-primary" type="submit">Check payment</button>
+          <button class="ant-btn ant-btn-primary" onclick="makeApiCall()">Verify payment</button>
         </div>
-      </div>    
+      </div> 
+      <div id="result"></div>   
     </form>
-
-    <!-- Modal Container -->
-    <div id="modal-container"></div> 
+    
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Import Ant Design JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.17.2/antd.min.js"></script>
-    <script>
-      // Format input field value to include comma separator and decimal places
-      function formatCurrency(event) {
-        const input = event.target;
-        const value = input.value.replace(/\D/g, "");
-        const formattedValue = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value / 100);
-        input.value = formattedValue;
-      }
-  
-      // Listen to input event on the transaction amount field
-      const transactionAmountField = document.querySelector('input[name="transaction_amount"]');
-      transactionAmountField.addEventListener("input", formatCurrency);
-
-      function showModal() {
-        const modal = Antd.Modal.confirm({
-          title: 'Confirm action',
-          content: 'Are you sure you want to perform this action?',
-          onOk: () => {
-            // Logic for success state
-            Antd.notification.success({
-              message: 'Success',
-              description: 'Action completed successfully.',
-            });
-          },
-          onCancel: () => {
-            // Logic for fail state
-            Antd.notification.error({
-              message: 'Failed',
-              description: 'Action was not completed.',
-            });
-          },
-        });
-
-        // Render modal to the page
-        modal.update({
-          getContainer: () => document.getElementById('modal-container'),
-        });
-      }
-    </script>
-    <script>
-      function formatCurrency(amount) {
-        // Create a number formatter with ZAR currency and decimal formatting
-        const formatter = new Intl.NumberFormat('en-ZA', {
-          style: 'currency',
-          currency: 'ZAR',
-          minimumFractionDigits: 2
-        });
     
-        // Format the input value with the formatter
-        return formatter.format(amount);
-      }
+    <script>      
+    function formatCurrency(event) {
+    const input = event.target;
+    const value = input.value.replace(/\D/g, "");
+    const formattedValue = new Intl.NumberFormat("en-ZA", { style: "currency", currency: "ZAR" }).format(value / 100);
+    input.value = formattedValue;
+    }
+  
+    // Listen to input event on the transaction amount field
+    const transactionAmountField = document.querySelector('input[name="transaction_amount"]');
+    transactionAmountField.addEventListener("input", formatCurrency);
+    </script>
+    
+    <script>
+    function makeApiCall() 
+    {
+      var transactionDate = document.getElementById("transaction_date").value;
+      var transactionAmount = document.getElementById("transaction_amount").value;
+      var paymentReference = document.getElementById("payment_reference").value;
+      var accountNumber = document.getElementById("account_number").value;
+
+      //if (transactionDate == null || transactionAmount == null || paymentReference == null|| accountNumber == null)
+        //return;
+
+      var result = document.getElementById("originating_bank").value;
+
+      if (result == "bank1")
+        document.getElementById("result").innerHTML = '<div class="ant-alert ant-alert-success"><span>Payment verified successfully. The payment appears legitimate.</span></div>';
+      else
+        document.getElementById("result").innerHTML = '<div class="ant-alert ant-alert-error"><span>Payment could not be verified. Please be cautious.</span></div>';
+    }
     </script>
   </body>
 </html>
